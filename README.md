@@ -6,10 +6,12 @@ para transcrição de vídeos utilizando diversas tecnologias e serviços para e
 - [x] Transcrição de vídeos utilizando a API do Replicate.
 - [x] Utilização de Node.js Worker Threads para multiplicar o poder de processamento.
 - [x] Integração assíncrona entre sistemas utilizando RabbitMQ.
-- [x] Armazenamento de arquivos após a transcrição em um ambiente local emulado com LocalStack, simulando o serviço S3 da AWS.
+- [x] Armazenamento de arquivos após a transcrição em um Bucket S3 da AWS emulado pelo LocalStack.
       
 ### Tecnologias Utilizadas:
-- [x] Node.js: Plataforma de execução de código JavaScript no backend.
-- [x] Worker Threads: Módulo do Node.js para execução de threads para processamento paralelo.
-- [x] RabbitMQ: Serviço de mensageria para comunicação assíncrona entre microserviços.
-- [x] LocalStack: Framework para emulação de serviços da AWS em ambientes locais, incluindo S3 que foi utilizado para armazenar os arquivos da transcrição.
+- [x] **`Replicate API:`** Utilizada para integração com modelos de IA de transcrição de vídeos. 
+- [x] **`Node.Js:`** Plataforma de execução de código JavaScript no backend.
+- [x] **`Worker Threads:`** Módulo do Node.js para execução de threads para processamento paralelo.
+- [x] **`Docker:`** Utilizado para facilitar a implantação e execução do ambiente de desenvolvimento em contêineres.
+- [x] **`RabbitMQ:`** Serviço de mensageria para comunicação assíncrona entre serviços.
+- [x] **`LocalStack:`** Tecnologia para emulação de serviços da AWS em ambientes locais, incluindo S3 que foi utilizado para armazenar os arquivos da transcrição.
