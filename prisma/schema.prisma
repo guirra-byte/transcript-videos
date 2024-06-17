@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transcription {
+  id              String @id @unique
+  readableURL     String @unique
+  s3Identifier    String @map("s3_identifier")
+  s3DestineBucket String @map("s3_destine_bucket")
+  status          String
+  startTime       String @map("start_time")
+  endTime         String @map("end_time")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt
+
+  @@map("transcription")
+}
