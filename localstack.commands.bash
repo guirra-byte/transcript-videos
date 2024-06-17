@@ -1,5 +1,5 @@
 $ localstack start
-$ aws --endpoint-url=http://localhost:4566 s3 mb s3://danieldcs
+$ aws --endpoint-url=http://localhost:4566 s3 mb s3://transcriptapp
 # aws - aws-cli command
 # --endpoint-url=http://localhost:${Localstack Port} 
 # mb - (Make Bucket)
