@@ -15,3 +15,8 @@ para transcrição de vídeos utilizando diversas tecnologias e serviços para e
 - [x] **`Docker:`** Utilizado para facilitar a implantação e execução do ambiente de desenvolvimento em contêineres.
 - [x] **`RabbitMQ:`** Serviço de mensageria para comunicação assíncrona entre serviços.
 - [x] **`LocalStack:`** Tecnologia para emulação de serviços da AWS em ambientes locais, incluindo S3 que foi utilizado para armazenar os arquivos da transcrição.
+
+##
+<p align="center">
+    <img src="https://www.aikonbox.com.br/icons?i=javascript,nodejs,docker,prisma,postgresql,aws&t=40" />
+</p>
