@@ -1,3 +1,4 @@
 node_modules
 .env
 pm2.config.json
+README.md

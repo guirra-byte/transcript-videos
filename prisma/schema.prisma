@@ -10,6 +10,7 @@ datasource db {
 model Transcription {
   id              String @id @unique
   readableURL     String @unique
+  description     String
   s3Identifier    String @map("s3_identifier")
   s3DestineBucket String @map("s3_destine_bucket")
   status          String

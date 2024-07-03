@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import dotenv from 'dotenv';
 import { connect } from 'amqplib';
+import { getVideosService } from './services/get-videos.service.mjss';
 
 let channel;
 dotenv.config();
@@ -16,7 +17,7 @@ const APP_WORKERS = [];
 const SERVER_PORT = 5262;
 
 createConnection();
-const server = createServer((request, response) => {
+const server = createServer(async (request, response) => {
   if (request.url === '/transcript') {
     console.log('Receiving request to transcript videos...');
 
@@ -29,6 +30,7 @@ const server = createServer((request, response) => {
     server.close();
     return response.end();
   }
+
 });
 
 server.listen(SERVER_PORT, () =>

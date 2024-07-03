@@ -28,7 +28,7 @@ parentPort.on('message', async (incomming_msg) => {
         webhook: data.webhook_endpoint,
         webhook_events_filter: ['completed', 'start'],
         input: {
-          url: data.url
+          url: data.url,
         }
       }).then((reply) => {
         const outDestine = `./output/transcription-${data._id}.txt`;
