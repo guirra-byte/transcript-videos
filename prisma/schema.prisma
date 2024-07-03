@@ -19,6 +19,30 @@ model Transcription {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt
+  Video     Video?   @relation(fields: [videoId], references: [id])
+  videoId   String?
 
   @@map("transcription")
+}
+
+model Video {
+  id           String @id @unique
+  s3Identifier String @map("s3_identifier")
+  s3Bucket     String @map("s3_bucket")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt
+
+  chunks         Chunk[]
+  transcriptions Transcription[]
+}
+
+model Chunk {
+  id           String   @id @unique
+  videoId      String   @map("video_id")
+  s3Identifier String   @map("s3_identifier")
+  s3Bucket     String   @map("s3_bucket")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  Video Video @relation(fields: [videoId], references: [id])
 }

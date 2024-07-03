@@ -1,9 +1,6 @@
 {
   "scripts": {
-    "prepare:pgsql": "docker start DOCKER_PGSQL_CONTAINER_ID -d",
     "prepare:migrations": "npx prisma migrate deploy",
-    "prepare:rabbitmq": "docker start DOCKER_RABBITMQ_CONTAINER_ID -d",
-    "prepare:localstack": "docker start DOCKER_LOCALSTACK_CONTAINER_ID -d",
     "dev": "node src/main.mjs"
   },
   "dependencies": {
