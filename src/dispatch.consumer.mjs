@@ -1,5 +1,5 @@
 import { Worker } from 'node:worker_threads';
-import { APP_WORKERS, channel, WORKERS } from './main.mjs';
+import { CHUNK_WORKERS, TRANSCRIPT_WORKERS, channel, WORKERS } from './main.mjs';
 import { nanoid } from 'nanoid';
 
 function roundRoubin(array, index = 0) {
@@ -9,7 +9,26 @@ function roundRoubin(array, index = 0) {
   }
 }
 
-channel.consume('transcipt', async (msg) => {
+// Large videos chunking service;
+channel.consume('large-video', async (msg) => {
+  const largeVideos = JSON.parse(msg);
+  if (CHUNK_WORKERS.length < WORKERS) {
+    for (const worker = 0; worker < WORKERS; worker++) {
+      const chunkWorker = new Worker('./video-chunking.worker.mjs');
+      CHUNK_WORKERS.push({
+        _worker: chunkWorker
+      });
+    }
+  }
+
+  for (const video of largeVideos) {
+    const worker = roundRoubin(CHUNK_WORKERS)();
+    worker.postMessage(JSON.stringify(video));
+  }
+});
+
+//Transcript videos service;
+channel.consume('transcript', async (msg) => {
   const videos = JSON.parse(msg.toString());
   const [notifyStatusTopic, notifyExchange] = ['video.transcription', 'notify_status'];
 
@@ -17,10 +36,10 @@ channel.consume('transcipt', async (msg) => {
   channel.assertExchange(notifyExchange, 'topic');
   channel.bindQueue('notify', notifyExchange, `${notifyStatusTopic}.*`);
 
-  if (APP_WORKERS.length < WORKERS) {
-    for (const worker = APP_WORKERS.length; worker < WORKERS; worker++) {
+  if (TRANSCRIPT_WORKERS.length < WORKERS) {
+    for (const worker = TRANSCRIPT_WORKERS.length; worker < WORKERS; worker++) {
       const videoWorker = new Worker('./transcription.worker.mjs');
-      APP_WORKERS.push({
+      TRANSCRIPT_WORKERS.push({
         _worker: videoWorker,
       });
     }
@@ -28,7 +47,7 @@ channel.consume('transcipt', async (msg) => {
 
   for (let index = 0; index < videos.length; index++) {
     const video = videos[index];
-    const worker = roundRoubin(APP_WORKERS)();
+    const worker = roundRoubin(TRANSCRIPT_WORKERS)();
     const transcriptTopic = `${notifyStatusTopic}.toTranscript`;
 
     channel.assertQueue(transcriptTopic);

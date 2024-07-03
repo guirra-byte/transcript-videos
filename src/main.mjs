@@ -12,7 +12,8 @@ function createConnection() {
 }
 
 const WORKERS = 5;
-const APP_WORKERS = [];
+const TRANSCRIPT_WORKERS = [];
+const CHUNK_WORKERS = [];
 const SERVER_PORT = 5262;
 
 createConnection();
@@ -36,4 +37,4 @@ server.listen(SERVER_PORT, () =>
   console.log(`Server is running on port: ${SERVER_PORT}`)
 );
 
-export { channel, WORKERS, APP_WORKERS };
+export { channel, WORKERS, TRANSCRIPT_WORKERS, CHUNK_WORKERS };

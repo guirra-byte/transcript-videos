@@ -5,12 +5,11 @@ import { S3Resources } from './aws/s3.mjs';
 import { nanoid } from "nanoid";
 
 export const chunksModel = async (data) => {
-  const chunkId = `${data.videoId}@chunk_${data.chunk.index}`;
   prisma.chunks.create({
     data: {
-      id: chunkId,
-      video_id: data.videoId,
-      s3_identifier: chunkId,
+      id: data.chunk.id,
+      video_id: data.video.id,
+      s3_identifier: data.chunk.id,
       s3_bucket: 'video.chunks'
     }
   });
@@ -20,7 +19,7 @@ const statusModel = async (data) => {
   if (data.status === 'Initiated') {
     let videoNanoid = nanoid();
     prisma.video.create({
-      id: videoNanoid,
+      id: data.videoId,
       s3_identifier: videoNanoid,
       s3_bucket: 'video.input'
     });
@@ -50,8 +49,19 @@ const statusModel = async (data) => {
 
 const s3Resources = new S3Resources();
 const NotifyConsumer = () => {
+  channel.consume('video_chunks', async (msg) => {
+    const parseData = JSON.parse(msg.content.toString());
+    await s3Resources.upload({
+      video_id: parseData.video.id,
+      _id: parseData.chunk.id,
+      file_path: parseData.chunk.path
+    });
+
+    await chunksModel(parseData);
+  });
+
   channel.consume('notify_status', async (msg) => {
-    const parseData = JSON.parse(msg.toString());
+    const parseData = JSON.parse(msg.content().toString());
     const [, , status] = parseData.topic.split('.');
 
     if (status) {
