@@ -1,7 +1,6 @@
 import { createServer } from 'node:http';
 import dotenv from 'dotenv';
 import { connect } from 'amqplib';
-import { getVideosService } from './services/get-videos.service.mjss';
 
 let channel;
 dotenv.config();
