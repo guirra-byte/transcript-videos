@@ -2,18 +2,40 @@ import { channel } from "./main.mjs";
 import { prisma } from './prisma/index';
 import { filePath } from "./config/path.config.mjs";
 import { S3Resources } from './aws/s3.mjs';
+import { nanoid } from "nanoid";
+
+export const chunksModel = async (data) => {
+  const chunkId = `${data.videoId}@chunk_${data.chunk.index}`;
+  prisma.chunks.create({
+    data: {
+      id: chunkId,
+      video_id: data.videoId,
+      s3_identifier: chunkId,
+      s3_bucket: 'video.chunks'
+    }
+  });
+}
 
 const statusModel = async (data) => {
   if (data.status === 'Initiated') {
+    let videoNanoid = nanoid();
+    prisma.video.create({
+      id: videoNanoid,
+      s3_identifier: videoNanoid,
+      s3_bucket: 'video.input'
+    });
+
     prisma.transcription.create({
       data: {
         id: data._id,
-        url: data.video,
+        readableURL: data.video,
+        description: data.description,
         status: data.status,
         endTime: data.endTime,
         startTime: data.startTime,
+        videoId: videoNanoid,
         s3Identifier: data._id,
-        s3DestineBucket: 'transcription.output'
+        s3DestineBucket: 'video.transcription.output'
       }
     });
   } else {

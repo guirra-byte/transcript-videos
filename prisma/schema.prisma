@@ -20,7 +20,7 @@ model Transcription {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt
   Video     Video?   @relation(fields: [videoId], references: [id])
-  videoId   String?
+  videoId   String?  @map("video_id")
 
   @@map("transcription")
 }
