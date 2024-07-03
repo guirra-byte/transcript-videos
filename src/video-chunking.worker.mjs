@@ -7,7 +7,6 @@ parentPort.on('messageerror', (error) => {
   throw error;
 });
 
-
 async function videoTimeSkip(chunkingConfig) {
   let timeSkipPreset = [];
   for (let chunk = 1; chunk <= chunkingConfig.videoChunks; chunk++) {
