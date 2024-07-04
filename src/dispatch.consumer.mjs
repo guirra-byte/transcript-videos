@@ -9,21 +9,28 @@ function roundRoubin(array, index = 0) {
   }
 }
 
+function workerFactory(copies, pathname, dest) {
+  for (let instance = 0; instance < copies; instance++) {
+    const worker = new Worker(pathname);
+    dest.push(worker);
+  }
+}
+
 // Large videos chunking service;
 channel.consume('large-video', async (msg) => {
   const largeVideos = JSON.parse(msg);
   if (CHUNK_WORKERS.length < WORKERS) {
-    for (const worker = 0; worker < WORKERS; worker++) {
-      const chunkWorker = new Worker('./video-chunking.worker.mjs');
-      CHUNK_WORKERS.push({
-        _worker: chunkWorker
-      });
-    }
+    workerFactory(
+      WORKERS,
+      './video-chunking.worker.mjs',
+      CHUNK_WORKERS
+    );
   }
 
   for (const video of largeVideos) {
     const worker = roundRoubin(CHUNK_WORKERS)();
-    worker.postMessage(JSON.stringify(video));
+    const videosDir = `${chunkingOutPath}/${video}`;
+    worker.postMessage(JSON.stringify(videosDir));
   }
 });
 
@@ -37,12 +44,11 @@ channel.consume('transcript', async (msg) => {
   channel.bindQueue('notify', notifyExchange, `${notifyStatusTopic}.*`);
 
   if (TRANSCRIPT_WORKERS.length < WORKERS) {
-    for (const worker = TRANSCRIPT_WORKERS.length; worker < WORKERS; worker++) {
-      const videoWorker = new Worker('./transcription.worker.mjs');
-      TRANSCRIPT_WORKERS.push({
-        _worker: videoWorker,
-      });
-    }
+    workerFactory(
+      WORKERS,
+      './transcription.worker.mjs',
+      TRANSCRIPT_WORKERS
+    );
   }
 
   for (let index = 0; index < videos.length; index++) {

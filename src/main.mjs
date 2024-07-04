@@ -1,6 +1,8 @@
 import { createServer } from 'node:http';
 import dotenv from 'dotenv';
 import { connect } from 'amqplib';
+import formidable from 'formidable';
+import { chunkingOutPath } from './config/path.config.mjs';
 
 let channel;
 dotenv.config();
@@ -31,6 +33,25 @@ const server = createServer(async (request, response) => {
     return response.end();
   }
 
+  if (request.url === '/large-videos' && request.method === 'POST') {
+    const form = formidable({
+      maxTotalFileSize: (200 * 1024 * 1024) * 10,
+      multiples: true,
+      maxFields: 10,
+      uploadDir: chunkingOutPath,
+    });
+
+    const [, files] = form.parse(request);
+    if (files) {
+      channel.assertQueue('large-video');
+      channel.publish('', 'large-video',
+        Buffer.from(JSON.stringify(files))
+      );
+
+      server.close();
+      return response.end();
+    }
+  }
 });
 
 server.listen(SERVER_PORT, () =>
