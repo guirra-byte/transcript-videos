@@ -17,7 +17,8 @@ para transcrição de vídeos utilizando diversas tecnologias e serviços para e
 - [x] **`LocalStack:`** Tecnologia para emulação de serviços da AWS em ambientes locais, incluindo S3 que foi utilizado para armazenar os arquivos da transcrição.
 <hr>
 
-![image](https://github.com/user-attachments/assets/4a0153cf-396e-40db-baff-3d0db332a7e7)
+![image](https://github.com/user-attachments/assets/52d261eb-bfcd-425a-938f-8cc5e40a1bd1)
+
 
 
 ##
