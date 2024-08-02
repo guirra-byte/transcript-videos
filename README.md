@@ -23,5 +23,5 @@ para transcrição de vídeos utilizando diversas tecnologias e serviços para e
 
 ##
 <p align="center">
-    <img src="https://www.aikonbox.com.br/icons?i=javascript,nodejs,docker,prisma,postgresql,aws&t=40" />
+    <img src="https://www.aikonbox.com.br/icons?i=javascript,nodejs,rabbitmq,docker,prisma,postgresql,aws&t=40" />
 </p>
