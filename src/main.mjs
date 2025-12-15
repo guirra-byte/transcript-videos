@@ -1,38 +1,41 @@
 import { createServer } from 'node:http';
-import dotenv from 'dotenv';
-import { connect } from 'amqplib';
+import { broker } from './core/libs/rabbitmq/index.mjs';
+import "./worker-pool.mjs";
 
-let channel;
-dotenv.config();
-function createConnection() {
-  (async () => {
-    const rabbitMq = await connect(process.env.RABBITMQ_CONNECT_URL);
-    channel = await rabbitMq.createChannel();
-  })();
-}
-
-const WORKERS = 5;
+const WORKERS = 3;
 const APP_WORKERS = [];
-const SERVER_PORT = 5262;
+const SERVER_PORT = 3000;
+const server = createServer(async (request, response) => {
+  if (request.url === '/callbacks/s3/video-created' && request.method === "POST") {
+    const [xApiKey, eventBridgeApiKey] = [
+      request.headers["x-api-key"],
+      request.headers["x-event-bridge-api-key"]
+    ];
 
-createConnection();
-const server = createServer((request, response) => {
-  if (request.url === '/transcript') {
-    console.log('Receiving request to transcript videos...');
+    const missingApiKeys = !xApiKey || !eventBridgeApiKey;
+    const unavailableApiKeys = xApiKey !== process.env.AWS_S3_X_API_KEY ||
+      eventBridgeApiKey !== process.env.AWS_EVENTBRIDGE_API_KEY;
 
-    const { videos } = request.body;
-    channel.assertQueue('transcript');
-    channel.publish('', 'transcript',
-      Buffer.from(JSON.stringify(videos))
-    );
+    if (missingApiKeys || unavailableApiKeys) {
+      response.statusCode = 401;
+      response.statusMessage = "Unauthorized";
+      return response.end();
+    }
 
-    server.close();
-    return response.end();
+    response.statusCode = 202;
+    response.statusMessage = "Processing your request!";
+    response.end();
+
+    request.on("data", async (rawData) => {
+      broker.assertQueue("dispatch");
+      const parsedData = Buffer.from(rawData).toString();
+      broker.publish("", "dispatch", Buffer.from(parsedData));
+    });
   }
 });
 
-server.listen(SERVER_PORT, () =>
+server.listen(SERVER_PORT, () => {
   console.log(`Server is running on port: ${SERVER_PORT}`)
-);
+});
 
-export { channel, WORKERS, APP_WORKERS };
+export { WORKERS, APP_WORKERS };
