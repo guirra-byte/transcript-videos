@@ -1,0 +1,28 @@
+{
+  "version": "0",
+  "id": "5c3570e2-f14c-cef2-7f0b-ef0a3bfa7446",
+  "detail-type": "Object Created",
+  "source": "aws.s3",
+  "account": "046801216531",
+  "time": "2025-12-13T01:57:27Z",
+  "region": "us-east-1",
+  "resources": [
+    "arn:aws:s3:::your-bucket-name"
+  ],
+  "detail": {
+    "version": "0",
+    "bucket": {
+      "name": "your-bucket-name"
+    },
+    "object": {
+      "key": "YTDown.com_YouTube_Back-end-e-dificil-Os-hacks-de-carreira_Media_CK0TkDgdURA_003_480p.wav",
+      "size": 218308686,
+      "etag": "3baabbffa1a2dd021fb6e3fd31af5c73-13",
+      "sequencer": "00693CC78A8D177D22"
+    },
+    "request-id": "YTYKNAK7Z9SSJ28Y",
+    "requester": "0123456789012",
+    "source-ip-address": "111.222.333.44",
+    "reason": "CompleteMultipartUpload"
+  }
+}
