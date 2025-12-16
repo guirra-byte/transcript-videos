@@ -1,7 +1,7 @@
 import { channel } from "./main.mjs";
 import { prisma } from './prisma/index';
 import { filePath } from "./config/path.config.mjs";
-import { S3Resources } from './aws/s3.mjs';
+import { S3Provider } from './aws/s3.mjs';
 
 const statusModel = async (data) => {
   if (data.status === 'Initiated') {
@@ -26,7 +26,7 @@ const statusModel = async (data) => {
   }
 }
 
-const s3Resources = new S3Resources();
+const s3Provider = new S3Provider();
 const NotifyConsumer = () => {
   channel.consume('notify_status', async (msg) => {
     const parseData = JSON.parse(msg.toString());
@@ -41,7 +41,7 @@ const NotifyConsumer = () => {
         await statusModel(parseData);
 
         if (availableStatus === 'Success') {
-          await s3Resources.upload({
+          await s3Provider.upload({
             _id: parseData._id,
             file_path: filePath('trascription', parseData._id)
           });

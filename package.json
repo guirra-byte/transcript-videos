@@ -1,18 +1,14 @@
 {
   "scripts": {
-    "prepare:pgsql": "docker start DOCKER_PGSQL_CONTAINER_ID -d",
-    "prepare:migrations": "npx prisma migrate deploy",
-    "prepare:rabbitmq": "docker start DOCKER_RABBITMQ_CONTAINER_ID -d",
-    "prepare:localstack": "docker start DOCKER_LOCALSTACK_CONTAINER_ID -d",
-    "dev": "node src/main.mjs",
+    "start:dev": "node src/main.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.948.0",
     "@prisma/client": "^5.15.0",
     "amqplib": "^0.10.4",
-    "aws-sdk": "^2.1640.0",
     "dotenv": "^16.4.5",
     "nanoid": "^3.3.6",
-    "replicate": "^0.30.2"
+    "openai": "^6.10.0"
   },
   "devDependencies": {
     "prisma": "^5.15.0"
