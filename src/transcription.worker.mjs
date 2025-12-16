@@ -12,7 +12,7 @@ parentPort.on('message', async (incomming_msg) => {
   await new Promise(async (resolve, reject) => {
     try {
       const s3Provider = new S3Provider();
-      const downloadDir = rootDir().concat(`/wav`);
+      const downloadDir = rootDir().concat(`/uploads`);
       if (!fs.existsSync(downloadDir))
         fs.mkdir(downloadDir, async (err, _) => {
           if (err) {
