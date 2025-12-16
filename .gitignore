@@ -1,3 +1,7 @@
 node_modules
 .env
+
+src/transcriptions
+src/uploads
+
 pm2.config.json
