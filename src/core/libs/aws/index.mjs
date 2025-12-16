@@ -1,5 +1,6 @@
 import { config } from "dotenv";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 config();
 function s3() {
@@ -32,6 +33,18 @@ class S3Provider {
           }
         });
     });
+  }
+
+  async getSignedUrl(bucket, s3Key) {
+    const createInstance = s3();
+    const s3Client = createInstance();
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: bucket,
+      Key: s3Key,
+    });
+
+    const signedUrl = getSignedUrl(s3Client, putObjectCommand);
+    return signedUrl;
   }
 }
 
