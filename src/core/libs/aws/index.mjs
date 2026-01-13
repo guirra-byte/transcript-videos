@@ -52,7 +52,7 @@ class S3Provider {
     return signedUrl;
   }
 
-  async streamUpload(key, rawData) {
+  async streamUpload(key, rawData, callback) {
     const createInstance = s3();
     const s3Client = createInstance();
     const parallelUploadS3 = new Upload({
