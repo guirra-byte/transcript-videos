@@ -79,7 +79,13 @@ const server = createServer(async (request, response) => {
       return response.end();
     }
 
-    const busboyHandler = busboy({ headers: request.headers, limits: { fileSize: 1024 * 1024 * 50 * 10 } });
+    const busboyHandler = busboy({
+      headers: {
+        ...request.headers,
+        "content-type": "multipart/form-data"
+      }, limits: { fileSize: 1024 * 1024 * 50 * 10 }
+    });
+    
     const streamUploadCallback = (payload) => {
       console.log(payload);
     };
