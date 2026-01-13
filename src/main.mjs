@@ -122,6 +122,7 @@ const server = createServer(async (request, response) => {
   }
 
   if (request.url === "/form" && request.method === "GET") {
+    const actionUrl = process.env.PROXY_URL;
     response.writeHead(200, {
       "Content-Type": "text/html; charset=utf-8",
       Connection: 'close'
@@ -131,7 +132,7 @@ const server = createServer(async (request, response) => {
       <html>
         <head></head>
         <body>
-          <form method="POST" action="https://bf6199e72208.ngrok-free.app/ingestion/direct-upload" enctype="multipart/form-data">
+          <form method="POST" action=${actionUrl}enctype="multipart/form-data">
             <input type="file" name="filefield"><br />
             <input type="text" name="textfield"><br />
             <input type="submit">
