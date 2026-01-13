@@ -1,12 +1,17 @@
 import { config } from "dotenv";
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client, UploadPartCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Upload } from "@aws-sdk/lib-storage";
 
 config();
 function s3() {
   let s3;
   return () => {
-    if (!s3) s3 = new S3Client({ region: process.env.AWS_DEFAULT_REGION });
+    if (!s3) s3 = new S3Client({
+      region: process.env.AWS_DEFAULT_REGION,
+      endpoint: process.env.AWS_BUCKET_ENDPOINT
+    });
+    
     return s3;
   };
 }
@@ -45,6 +50,18 @@ class S3Provider {
 
     const signedUrl = getSignedUrl(s3Client, putObjectCommand);
     return signedUrl;
+  }
+
+  async streamUpload(key, rawData, callback) {
+    const createInstance = s3();
+    const s3Client = createInstance();
+    const parallelUploadS3 = new Upload({
+      client: s3Client,
+      params: { Key: key, Body: rawData },
+    });
+
+    await parallelUploadS3.done()
+      .then((output) => callback(output));
   }
 }
 
