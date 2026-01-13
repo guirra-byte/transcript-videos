@@ -7,7 +7,11 @@ config();
 function s3() {
   let s3;
   return () => {
-    if (!s3) s3 = new S3Client({ region: process.env.AWS_DEFAULT_REGION, endpoint: "https://transcript-videos-bucket.s3.us-east-1.amazonaws.com/" });
+    if (!s3) s3 = new S3Client({
+      region: process.env.AWS_DEFAULT_REGION,
+      endpoint: process.env.AWS_BUCKET_ENDPOINT
+    });
+    
     return s3;
   };
 }
