@@ -78,10 +78,10 @@ const server = createServer(async (request, response) => {
       response.statusMessage = "Unauthorized";
       return response.end();
     }
-    
+
     const busboyHandler = busboy({ headers: request.headers, limits: { fileSize: 1024 * 1024 * 50 * 10 } });
     const streamUploadCallback = (payload) => {
-      console.log(progress);
+      console.log(payload);
     };
 
     busboyHandler.on("file", async (_name, file, info) => {
