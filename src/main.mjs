@@ -98,11 +98,19 @@ const server = createServer(async (request, response) => {
           );
         } catch (err) {
           console.error("Upload failed:", err);
+
+          response.statusCode = 500;
+          response.statusMessage = "Internal Server Error";
+          return response.end();
         }
       });
     });
 
     request.pipe(busboyHandler);
+
+    response.statusCode = 200;
+    response.statusMessage = "File S3 upload succeed!";
+    return response.end();
   }
 
   if (request.url === "/form" && request.method === "GET") {
