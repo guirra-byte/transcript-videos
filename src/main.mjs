@@ -132,7 +132,7 @@ const server = createServer(async (request, response) => {
       <html>
         <head></head>
         <body>
-          <form method="POST" action=${actionUrl}enctype="multipart/form-data">
+          <form method="POST" action=${actionUrl} enctype="multipart/form-data">
             <input type="file" name="filefield"><br />
             <input type="text" name="textfield"><br />
             <input type="submit">
