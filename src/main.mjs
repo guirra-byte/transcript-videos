@@ -1,8 +1,10 @@
 import { createServer } from 'node:http';
 import { broker } from './core/libs/rabbitmq/index.mjs';
 import "./worker-pool.mjs";
-import { presignedUrlIssuerService } from './services/presigned-urls-issuer-service.mjs';
+import { PassThrough } from 'node:stream';
 import { config } from 'dotenv';
+import busboy from "busboy";
+import { S3Provider } from './core/libs/aws/index.mjs';
 
 const WORKERS = 3;
 const APP_WORKERS = [];
@@ -37,7 +39,7 @@ const server = createServer(async (request, response) => {
     });
   }
 
-  if (request.url === '/ingestion/upload-url' && request.method === 'POST') {
+  if (request.url === '/ingestion/upload-url' && request.method === "POST") {
     const xUploadAuthorization = request.headers["x-upload-authorization"];
     const unavailableUploadAuthKey = xUploadAuthorization !== process.env.UPLOAD_AUTHORIZATION_KEY;
     if (!xUploadAuthorization || unavailableUploadAuthKey) {
@@ -66,6 +68,63 @@ const server = createServer(async (request, response) => {
         return response.end();
       }
     });
+  }
+
+  if (request.url === "/ingestion/direct-upload" && request.method === "POST") {
+    const busboyHandler = busboy({ headers: request.headers, limits: { fileSize: 1024 * 1024 * 50 * 10 } });
+    const streamUploadCallback = (payload) => {
+      console.log(progress);
+    };
+
+    busboyHandler.on("file", async (_name, file, info) => {
+      const startAt = process.hrtime.bigint();
+
+      const bucket = process.env.AWS_BUCKET_NAME;
+      const passThrough = new PassThrough();
+
+      const s3Provider = new S3Provider();
+      const uploadPromise = s3Provider.streamUpload(bucket, info.filename, passThrough, streamUploadCallback);
+      file.pipe(passThrough);
+
+      file.on("end", async () => {
+        try {
+          await uploadPromise;
+          const endAt = process.hrtime.bigint();
+          const executionTimeMs =
+            Number(endAt - startAt) / 1_000_000;
+
+          console.log(
+            `File: ${info.filename} uploaded in ${executionTimeMs}ms`
+          );
+        } catch (err) {
+          console.error("Upload failed:", err);
+        }
+      });
+    });
+
+    request.pipe(busboyHandler);
+  }
+
+  if (request.url === "/form" && request.method === "GET") {
+    response.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+      Connection: 'close'
+    });
+
+    response.end(`
+      <html>
+        <head></head>
+        <body>
+          <form method="POST" action="https://bf6199e72208.ngrok-free.app/ingestion/direct-upload" enctype="multipart/form-data">
+            <input type="file" name="filefield"><br />
+            <input type="text" name="textfield"><br />
+            <input type="submit">
+          </form>
+        </body>
+      </html>
+    `);
+
+    return;
   }
 });
 
