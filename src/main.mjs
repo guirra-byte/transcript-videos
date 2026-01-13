@@ -104,6 +104,10 @@ const server = createServer(async (request, response) => {
           console.log(
             `File: ${info.filename} uploaded in ${executionTimeMs}ms`
           );
+
+          response.statusCode = 200;
+          response.statusMessage = "File S3 upload succeed!";
+          return response.end();
         } catch (err) {
           console.error("Upload failed:", err);
 
@@ -115,10 +119,6 @@ const server = createServer(async (request, response) => {
     });
 
     request.pipe(busboyHandler);
-
-    response.statusCode = 200;
-    response.statusMessage = "File S3 upload succeed!";
-    return response.end();
   }
 
   if (request.url === "/form" && request.method === "GET") {
