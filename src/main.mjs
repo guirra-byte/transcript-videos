@@ -71,6 +71,14 @@ const server = createServer(async (request, response) => {
   }
 
   if (request.url === "/ingestion/direct-upload" && request.method === "POST") {
+    const xUploadAuthorization = request.headers["x-upload-authorization"];
+    const unavailableUploadAuthKey = xUploadAuthorization !== process.env.UPLOAD_AUTHORIZATION_KEY;
+    if (!xUploadAuthorization || unavailableUploadAuthKey) {
+      response.statusCode = 401;
+      response.statusMessage = "Unauthorized";
+      return response.end();
+    }
+    
     const busboyHandler = busboy({ headers: request.headers, limits: { fileSize: 1024 * 1024 * 50 * 10 } });
     const streamUploadCallback = (payload) => {
       console.log(progress);
