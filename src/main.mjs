@@ -91,7 +91,7 @@ const server = createServer(async (request, response) => {
       const passThrough = new PassThrough();
 
       const s3Provider = new S3Provider();
-      const uploadPromise = s3Provider.streamUpload(bucket, info.filename, passThrough, streamUploadCallback);
+      const uploadPromise = s3Provider.streamUpload(bucket, passThrough, streamUploadCallback);
       file.pipe(passThrough);
 
       file.on("end", async () => {
